@@ -1,12 +1,51 @@
 services:
   api:
     build: .
-    env_file: .env
+    # Explicit list instead of env_file so the API never sees the DB admin password.
+    environment:
+      Line__ChannelSecret: ${Line__ChannelSecret:?}
+      Line__ChannelAccessToken: ${Line__ChannelAccessToken:?}
+      ConnectionStrings__Ledger: Host=db;Database=accounting;Username=accounting_app;Password=${APP_DB_PASSWORD:?}
     ports:
       # Localhost only: put a TLS reverse proxy in front (LINE requires HTTPS).
       - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
     read_only: true
     cap_drop: [ALL]
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    # Run as the image's postgres user (uid 70 on alpine) so no capabilities are needed.
+    user: "70:70"
+    environment:
+      POSTGRES_DB: accounting
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Runs only when the data volume is empty (first start).
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      # Localhost only, for local DB tools.
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "accounting"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    read_only: true
+    tmpfs:
+      - /var/run/postgresql
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  db-data:

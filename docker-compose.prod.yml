@@ -5,15 +5,23 @@
 #   docker compose -f docker-compose.prod.yml pull
 #   docker compose -f docker-compose.prod.yml up -d --remove-orphans
 #
-# Required in .env on the VPS: API_IMAGE, DOMAIN, Line__ChannelSecret, Line__ChannelAccessToken
+# Required in .env on the VPS: API_IMAGE, DOMAIN, Line__ChannelSecret, Line__ChannelAccessToken,
+#   POSTGRES_PASSWORD, APP_DB_PASSWORD (use `openssl rand -hex 32`; no ';' in passwords)
 # Certs: certbot on the host, issued to /etc/letsencrypt/live/$DOMAIN/
 services:
   api:
     image: ${API_IMAGE:?set API_IMAGE, e.g. ghcr.io/<user>/personalaccountingapi:latest}
-    env_file: .env
+    # Explicit list instead of env_file so the API never sees the DB admin password.
+    environment:
+      Line__ChannelSecret: ${Line__ChannelSecret:?}
+      Line__ChannelAccessToken: ${Line__ChannelAccessToken:?}
+      ConnectionStrings__Ledger: Host=db;Database=accounting;Username=accounting_app;Password=${APP_DB_PASSWORD:?}
     # No published ports: only reachable by nginx on the compose network.
     expose:
       - "8080"
+    depends_on:
+      db:
+        condition: service_healthy
     read_only: true
     cap_drop: [ALL]
     security_opt:
@@ -37,3 +45,33 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    # Run as the image's postgres user (uid 70 on alpine) so no capabilities are needed.
+    user: "70:70"
+    environment:
+      POSTGRES_DB: accounting
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Runs only when the data volume is empty (first start).
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    # No published ports: only the API can reach it.
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "accounting"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    read_only: true
+    tmpfs:
+      - /var/run/postgresql
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  db-data:
