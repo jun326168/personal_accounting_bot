@@ -1,8 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
+using PersonalAccountingApi.Options;
 
-namespace PersonalAccountingApi;
+namespace PersonalAccountingApi.Filters;
 
 /// <summary>
 /// Rejects requests whose X-Line-Signature does not match the HMAC-SHA256 of the raw body.

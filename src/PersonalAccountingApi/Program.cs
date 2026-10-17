@@ -1,4 +1,5 @@
-using PersonalAccountingApi;
+using PersonalAccountingApi.Options;
+using PersonalAccountingApi.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ builder.Services.AddOptions<LineOptions>()
     .BindConfiguration("Line")
     .ValidateDataAnnotations()
     .ValidateOnStart();
+
+builder.Services.AddLineWebhook();
 
 builder.WebHost.ConfigureKestrel(o =>
 {
@@ -19,11 +22,6 @@ var app = builder.Build();
 
 app.MapGet("/health", () => Results.Ok());
 
-app.MapPost("/webhook", () =>
-    {
-        // TODO: parse and handle LINE events here.
-        return Results.Ok();
-    })
-    .AddEndpointFilter<LineSignatureFilter>();
+app.MapLineWebhook();
 
 app.Run();

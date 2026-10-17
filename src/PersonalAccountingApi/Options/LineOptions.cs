@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace PersonalAccountingApi;
+namespace PersonalAccountingApi.Options;
 
 public sealed class LineOptions
 {
