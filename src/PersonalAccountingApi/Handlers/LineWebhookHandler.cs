@@ -1,6 +1,7 @@
 using System.Text.Json;
 using PersonalAccountingApi.Filters;
-using PersonalAccountingApi.Services;
+using PersonalAccountingApi.Services.Messaging;
+using PersonalAccountingApi.Services.Tool;
 
 namespace PersonalAccountingApi.Handlers;
 
@@ -53,10 +54,8 @@ public static class LineWebhookExtensions
     public static IServiceCollection AddLineWebhook(this IServiceCollection services)
     {
         services.AddHttpClient<ILineMessagingService, LineMessagingService>(c => c.BaseAddress = new Uri("https://api.line.me/"));
-
-        // Message services are tried in this order; add new ones here.
+        
         services.AddScoped<IMessageService, BookKeepingService>();
-
         services.AddScoped<LineWebhookHandler>();
         return services;
     }

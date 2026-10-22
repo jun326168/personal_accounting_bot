@@ -1,0 +1,1 @@
+namespace PersonalAccountingApi.Services.Tool;

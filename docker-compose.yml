@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17
+    image: postgres:17-alpine
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -10,12 +10,12 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - dbdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 3s
       retries: 5
 
-  # Give limited privilege to user 
+  # Give default limited privilege to user 
   db-user-init:
     image: postgres:17-alpine
     environment:
@@ -30,6 +30,27 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  # Create tables and business logics
+  db-migrate:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - APP_DB_USER=${APP_DB_USER}
+    volumes:
+      - ./db/migrate.sh:/migrate.sh:ro
+      - ./db/migrations:/migrations:ro
+    entrypoint: ["sh", "/migrate.sh"]
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      db-user-init:
+        condition: service_completed_successfully
 
   api:
     build: .
