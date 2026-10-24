@@ -15,11 +15,11 @@ public static class WebhookEndpoints
 
   // dispatch to different handlers
   public static async Task<IResult> ReceiveWebhook(
-    WebhookEnvelope,
+    WebhookDto dto,
     IWebhookDispatcher dispatcher,
     CancellationToken ct)
   {
-    await dispatcher.DispatchAsync(envelope, ct);
+    await dispatcher.DispatchAsync(dto, ct);
     return Results.Accepted();
   }
 }

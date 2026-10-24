@@ -20,8 +20,15 @@ public static class WebhookServiceExtensions
   // add webhooks extension
   public static IServiceCollection AddWebhooks(this IServiceCollection services, IConfiguration c)
   {
-    // register
+    // register services
+    services.addScoped<IFollowService, FollowService>();
+    services.addScoped<IMessageService, MessageService>();
+    services.addScoped<IPostbackService, PostbackService>();
+
+    // register handlers & dispatcher
     services.AddScoped<IWebhookHandler, FollowHandler>();
+    services.AddScoped<IWebhookHandler, MessageHandler>();
+    services.AddScoped<IWebhookHandler, PostbackHandler>();
     services.AddScoped<IWebhookDispatcher, WebhookDispatcher>();
 
     return services;
