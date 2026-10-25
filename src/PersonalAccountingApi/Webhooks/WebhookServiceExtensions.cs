@@ -1,5 +1,8 @@
-using PersonalAccountingApi.Options;
+using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
+using PersonalAccountingApi.Options;
+using PersonalAccountingApi.Infrastructure.ExternalApis;
 
 namespace PersonalAccountingApi.Webhooks;
 namespace PersonalAccountingApi.Webhooks.Handlers;
@@ -15,11 +18,25 @@ public static class WebhookServiceExtensions
       .BindConfiguration("Line")
       .ValidateDataAnnotations()
       .ValidateOnStart();
+
+    // LINE Messaging API client
+    services.AddHttpClient<ILineMessagingClient, LineMessagingClient>((sp, client) =>
+    {
+      var opt = sp.GetRequiredService<IOptions<LineOptions>>().Value;
+      client.BaseAddress = new Uri("https://api.line.me/");
+      client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", opt.ChannelAccessToken);
+      client.Timeout = TimeSpan.FromSeconds(10);
+    });
+
+    return services;
   }
 
   // add webhooks extension
   public static IServiceCollection AddWebhooks(this IServiceCollection services, IConfiguration c)
   {
+    // register infra
+    services.addScoped<ILineMessagingClient, LineMessagingClient>();
+
     // register services
     services.addScoped<IFollowService, FollowService>();
     services.addScoped<IMessageService, MessageService>();

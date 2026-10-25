@@ -9,7 +9,6 @@ public sealed class FollowHandler(
 {
   public string EventType = "follow";
 
-  // 
   public async Task HandleAsync(LineEventDto dto, CancellationToken ct)
   {
     string? userId = null;

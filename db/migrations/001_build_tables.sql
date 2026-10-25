@@ -36,9 +36,9 @@ CREATE UNIQUE INDEX uq_one_opening ON transactions ((true)) WHERE kind = 'openin
 CREATE TABLE accounts (
   id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name            varchar(50) NOT NULL UNIQUE, -- 現金 (Cash), 應收帳款 (Accounts Receivable), etc
-  type            varchar(9)  NOT NULL CHECK (type IN ('ASSET','LIABILITY','EQUITY','REVENUE','EXPENSE')),
+  type            varchar(9)  NOT NULL CHECK (type IN ('asset','liability','equity','revenue','expense')),
   normal_balance  varchar(6) GENERATED ALWAYS AS (
-    CASE WHEN type IN ('ASSET','EXPENSE') THEN 'DEBIT' ELSE 'CREDIT' END
+    CASE WHEN type IN ('asset','expense') THEN 'debit' ELSE 'credit' END
   ) STORED,
   created_at      timestamptz NOT NULL DEFAULT now()
 );
@@ -126,7 +126,7 @@ BEGIN
   END IF;
 
   SELECT count(*),
-         COALESCE(SUM(CASE a.normal_balance WHEN 'DEBIT' THEN e.amount ELSE -e.amount END), 0)
+         COALESCE(SUM(CASE a.normal_balance WHEN 'debit' THEN e.amount ELSE -e.amount END), 0)
     INTO n, total
     FROM journal_entries e
     JOIN accounts a ON a.id = e.account_id
