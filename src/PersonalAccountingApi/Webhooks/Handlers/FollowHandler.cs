@@ -1,5 +1,6 @@
 using System.Text.Json;
 using PersonalAccountingApi.Webhooks;
+using PersonalAccountingApi.Services.Messaging;
 
 namespace PersonalAccountingApi.Webhooks.Handlers;
 
@@ -7,7 +8,7 @@ public sealed class FollowHandler(
   IFollowService followService,
   ILogger<FollowHandler> logger) : IWebhookHandler
 {
-  public string EventType = "follow";
+  public string EventType { get; } = "follow";
 
   public async Task HandleAsync(LineEventDto dto, CancellationToken ct)
   {

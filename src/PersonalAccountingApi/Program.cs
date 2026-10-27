@@ -1,9 +1,11 @@
-using PersonalAccountingApi.Webhooks.Extensions;
-using PersonalAccountingApi.Webhooks.Endpoints;
+using PersonalAccountingApi.Webhooks;
+using PersonalAccountingApi.Webhooks.Handlers;
+using PersonalAccountingApi.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAppOptions();
+builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddWebhooks();
 
 builder.WebHost.ConfigureKestrel(o =>

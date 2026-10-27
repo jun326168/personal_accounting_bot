@@ -6,13 +6,15 @@ public enum MessageRole { Bot, User }
 
 public enum MessageType { Text, FlexMessage, Template }
 
-public sealed record Message(
-  long Id,
-  long UserId,
-  MessageRole Role,
-  string LineMessageId,
-  string? TextContent,
-  JsonNode? JsonContent, // for flex message or template
-  MessageType Type,
-  bool IsTransaction,
-  DateTimeOffset CreatedAt);
+public sealed class Message
+{
+  public long Id { get; init; }
+  public long UserId { get; init; }
+  public MessageRole Role { get; init; }
+  public required string LineMessageId { get; init; }
+  public string? TextContent { get; init; }
+  public JsonNode? JsonContent { get; init; } // for flex message or template
+  public MessageType Type { get; init; }
+  public bool IsTransaction { get; set; }
+  public DateTimeOffset CreatedAt { get; init; }
+}

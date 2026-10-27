@@ -1,6 +1,8 @@
 namespace PersonalAccountingApi.Domain.Entities;
 
-public sealed record User(
-  long Id,
-  string LineUserId,
-  DateTimeOffset CreatedAt);
+public sealed class User
+{
+  public long Id { get; init; }
+  public required string LineUserId { get; init; }
+  public DateTimeOffset CreatedAt { get; init; }
+}

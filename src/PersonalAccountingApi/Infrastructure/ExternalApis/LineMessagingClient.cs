@@ -1,5 +1,7 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using PersonalAccountingApi.Common.Line;
+using System.Text.Json.Serialization;
 
 namespace PersonalAccountingApi.Infrastructure.ExternalApis;
 

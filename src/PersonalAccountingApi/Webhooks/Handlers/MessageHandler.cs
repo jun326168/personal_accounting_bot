@@ -1,5 +1,6 @@
 using System.Text.Json;
 using PersonalAccountingApi.Webhooks;
+using PersonalAccountingApi.Services.Messaging;
 
 namespace PersonalAccountingApi.Webhooks.Handlers;
 
@@ -7,7 +8,7 @@ public sealed class MessageHandler(
   MessageService messageService,
   ILogger<MessageHandler> logger) : IWebhookHandler
 {
-  public string EventType = "message";
+  public string EventType { get; } = "message";
 
   public async Task HandleAsync(LineEventDto dto, CancellationToken ct)
   {

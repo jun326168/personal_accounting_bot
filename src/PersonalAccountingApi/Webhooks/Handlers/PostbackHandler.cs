@@ -1,5 +1,7 @@
 using System.Text.Json;
+using System.Web;
 using PersonalAccountingApi.Webhooks;
+using PersonalAccountingApi.Services.Messaging;
 
 namespace PersonalAccountingApi.Webhooks.Handlers;
 
@@ -7,7 +9,7 @@ public sealed class PostbackHandler(
   PostbackService postbackService,
   ILogger<PostbackHandler> logger) : IWebhookHandler
 {
-  public string EventType = "postback";
+  public string EventType { get; } = "postback";
 
   public async Task HandleAsync(LineEventDto dto, CancellationToken ct)
   {
