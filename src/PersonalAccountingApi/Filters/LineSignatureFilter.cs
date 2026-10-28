@@ -15,8 +15,8 @@ public sealed class LineSignatureFilter(IOptions<LineOptions> options) : IEndpoi
     {
         var request = context.HttpContext.Request;
 
-        // Buffer so the endpoint can still read the body after we've hashed it.
-        request.EnableBuffering();
+        // Body is buffered by middleware (binding has already read it); rewind to hash the raw bytes.
+        request.Body.Position = 0;
         using var ms = new MemoryStream();
         await request.Body.CopyToAsync(ms, context.HttpContext.RequestAborted);
         request.Body.Position = 0;

@@ -16,6 +16,15 @@ builder.WebHost.ConfigureKestrel(o =>
 
 var app = builder.Build();
 
+// Parameter binding reads the body before endpoint filters run, so buffer it here
+// to let LineSignatureFilter hash the raw bytes afterwards.
+app.Use((ctx, next) =>
+{
+    if (ctx.Request.Path.StartsWithSegments("/webhook"))
+        ctx.Request.EnableBuffering();
+    return next();
+});
+
 app.MapGet("/health", () => Results.Ok());
 
 app.MapWebhookEndpoints();
