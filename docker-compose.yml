@@ -24,6 +24,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - APP_DB_USER=${APP_DB_USER}
       - APP_DB_PASSWORD=${APP_DB_PASSWORD}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - ./db/create-app-user.sh:/create-app-user.sh:ro
     entrypoint: ["sh", "/create-app-user.sh"]
