@@ -4,10 +4,8 @@ using PersonalAccountingApi.Infrastructure.ExternalApis;
 
 namespace PersonalAccountingApi.Services.Messaging;
 
-public sealed class PostbackService(ILineMessagingClient lineClient) : IPostbackService
+public sealed class PostbackService() : IPostbackService
 {
-  public async Task HandleUserPostbackAsync(PostbackPayload payload, CancellationToken ct)
-  {
-    
-  }
+  public Task HandleUserPostbackAsync(PostbackPayload payload, CancellationToken ct)
+    => Task.CompletedTask;
 }

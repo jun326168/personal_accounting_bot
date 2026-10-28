@@ -6,7 +6,7 @@ using PersonalAccountingApi.Services.Messaging;
 namespace PersonalAccountingApi.Webhooks.Handlers;
 
 public sealed class PostbackHandler(
-  PostbackService postbackService,
+  IPostbackService postbackService,
   ILogger<PostbackHandler> logger) : IWebhookHandler
 {
   public string EventType { get; } = "postback";
@@ -25,7 +25,7 @@ public sealed class PostbackHandler(
       return;
     }
 
-    var postbackElement = dto.Postback.Value;
+    var postbackElement = dto.Postback!.Value;
     string data = postbackElement.TryGetProperty("data", out var dataProp) ? dataProp.GetString() ?? "" : "";
 
     // turn params into dictionary

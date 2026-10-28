@@ -4,10 +4,8 @@ using PersonalAccountingApi.Infrastructure.ExternalApis;
 
 namespace PersonalAccountingApi.Services.Messaging;
 
-public sealed class MessageService(ILineMessagingClient lineClient) : IMessageService
+public sealed class MessageService() : IMessageService
 {
-  public async Task HandleUserMessageAsync(MessagePayload payload, CancellationToken ct)
-  {
-    
-  }
+  public Task HandleUserMessageAsync(MessagePayload payload, CancellationToken ct)
+    => Task.CompletedTask;
 }

@@ -39,9 +39,6 @@ public static class WebhookServiceExtensions
   // add webhooks extension
   public static IServiceCollection AddWebhooks(this IServiceCollection services)
   {
-    // register infra
-    services.AddScoped<ILineMessagingClient, LineMessagingClient>();
-
     // register services
     services.AddScoped<IFollowService, FollowService>();
     services.AddScoped<IMessageService, MessageService>();

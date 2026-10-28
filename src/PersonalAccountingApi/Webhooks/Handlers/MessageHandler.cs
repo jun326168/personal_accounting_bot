@@ -5,7 +5,7 @@ using PersonalAccountingApi.Services.Messaging;
 namespace PersonalAccountingApi.Webhooks.Handlers;
 
 public sealed class MessageHandler(
-  MessageService messageService,
+  IMessageService messageService,
   ILogger<MessageHandler> logger) : IWebhookHandler
 {
   public string EventType { get; } = "message";
@@ -24,7 +24,7 @@ public sealed class MessageHandler(
       return;
     }
 
-    var messageElement = dto.Message.Value;
+    var messageElement = dto.Message!.Value;
     string msgType = messageElement.TryGetProperty("type", out var typeProp) ? typeProp.GetString() ?? "" : "";
     string msgId = messageElement.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? "" : "";
     string text = messageElement.TryGetProperty("text", out var textProp) ? textProp.GetString() ?? "" : "";

@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY src/PersonalAccountingApi/PersonalAccountingApi.csproj src/PersonalAccountingApi/
-RUN dotnet add src/PersonalAccountingApi package Microsoft.EntityFrameworkCore
 RUN dotnet restore src/PersonalAccountingApi
 COPY src/ src/
 RUN dotnet publish src/PersonalAccountingApi -c Release -o /app --no-restore

@@ -17,14 +17,14 @@ public class LineMessagingClient : ILineMessagingClient
 
 
   // push to userId / groupId / roomId
-  public Task PushAsync(string to, IEnumerable<LineMessage> messages, CancellationToken ct = default)
-    => PostAsync("v2/bot/message/push", new { to, messages }, ct);
+  public Task<LineSendMessageResponse> PushAsync(string to, IEnumerable<LineMessage> messages, CancellationToken ct = default)
+    => PostAsync<object, LineSendMessageResponse>("v2/bot/message/push", new { to, messages }, ct);
 
   // reply to webhook
-  public Task ReplyAsync(string replyToken, IEnumerable<LineMessage> messages, CancellationToken ct = default)
-    => PostAsync("v2/bot/message/reply", new { replyToken, messages }, ct);
+  public Task<LineSendMessageResponse> ReplyAsync(string replyToken, IEnumerable<LineMessage> messages, CancellationToken ct = default)
+    => PostAsync<object, LineSendMessageResponse>("v2/bot/message/reply", new { replyToken, messages }, ct);
 
-  private async Task PostAsync<T>(string url, T payload, CancellationToken ct)
+  private async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest payload, CancellationToken ct)
   {
     using var request = new HttpRequestMessage(HttpMethod.Post, url)
     {
@@ -39,5 +39,8 @@ public class LineMessagingClient : ILineMessagingClient
       throw new HttpRequestException(
           $"LINE API Failed: {(int)response.StatusCode} {body}", null, response.StatusCode);
     }
+
+    return await response.Content.ReadFromJsonAsync<TResponse>(options: JsonOptions, cancellationToken: ct)
+      ?? throw new InvalidOperationException("LINE API Failed: Message ID not received");
   }
 }
