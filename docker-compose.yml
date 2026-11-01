@@ -24,7 +24,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - APP_DB_USER=${APP_DB_USER}
       - APP_DB_PASSWORD=${APP_DB_PASSWORD}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - ./db/create-app-user.sh:/create-app-user.sh:ro
     entrypoint: ["sh", "/create-app-user.sh"]
@@ -58,6 +57,7 @@ services:
     environment:
       - Line__ChannelSecret=${LINE_CHANNEL_SECRET}
       - Line__ChannelAccessToken=${LINE_CHANNEL_ACCESS_TOKEN}
+      - Anthropic__ApiKey=${ANTHROPIC_API_KEY}
       - DATABASE_URL=postgresql://${APP_DB_USER}:${APP_DB_PASSWORD}@db:5432/${POSTGRES_DB}
     ports:
       - "127.0.0.1:8080:8080"

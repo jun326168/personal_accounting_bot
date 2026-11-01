@@ -12,7 +12,7 @@ using PersonalAccountingApi.Infrastructure.ExternalApis;
 
 namespace PersonalAccountingApi.Infrastructure.Extensions;
 
-public static class WebhookServiceExtensions
+public static class ServiceExtensions
 {
   // add line options (verify the signature)
   public static IServiceCollection AddAppOptions(this IServiceCollection services)
@@ -32,6 +32,14 @@ public static class WebhookServiceExtensions
       client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", opt.ChannelAccessToken);
       client.Timeout = TimeSpan.FromSeconds(10);
     });
+
+    // Anthropic options
+    services.AddOptions<AnthropicOptions>()
+      .BindConfiguration("Anthropic")
+      .ValidateDataAnnotations()
+      .ValidateOnStart();
+    services.AddSingleton(sp => new AnthropicClient { ApiKey = sp.GetRequiredService<IOptions<AnthropicOptions>>().Value.ApiKey });
+    services.AddSingleton<IAiClient, AiClient>();
 
     return services;
   }
@@ -67,6 +75,18 @@ public static class WebhookServiceExtensions
     return services;
   }
 
+  // add ai tools (loop tools + terminal tools the model can call)
+  public static IServiceCollection AddAiTools(this IServiceCollection services)
+  {
+    services.AddScoped<IAiTool, GetBalanceTool>();
+    services.AddScoped<IAiTool, SearchTransactionsTool>();
+    services.AddScoped<IAiTool, SummarizeTool>();
+    services.AddScoped<IAiTool, ProposeTransactionTool>();
+    services.AddScoped<IAiTool, ProposeReversalTool>();
+
+    return services;
+  }
+
   // Npgsql does not accept the postgresql:// URI form, so convert it to a key/value connection string.
   private static string ToNpgsqlConnectionString(string url)
   {
@@ -82,4 +102,5 @@ public static class WebhookServiceExtensions
       Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : null,
     }.ConnectionString;
   }
+
 }

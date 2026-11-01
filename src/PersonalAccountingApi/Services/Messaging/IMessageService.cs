@@ -15,3 +15,4 @@ public interface IMessageService
 {
   Task HandleUserMessageAsync(MessagePayload payload, CancellationToken ct);
 }
+

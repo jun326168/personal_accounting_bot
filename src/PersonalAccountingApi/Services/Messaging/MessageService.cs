@@ -1,8 +1,14 @@
 using PersonalAccountingApi.Common.Line;
 using PersonalAccountingApi.Templates.Messages;
+using PersonalAccountingApi.Infrastructure.Data;
 using PersonalAccountingApi.Infrastructure.ExternalApis;
 
 namespace PersonalAccountingApi.Services.Messaging;
+
+// response record
+public abstract record AssistantReply;
+public sealed record AnswerReply(string Text) : AssistantReply;
+public sealed record ProposalReply(long ProposalId, string Summary) : AssistantReply; // render as confirm card
 
 public sealed class MessageService(
   ILineMessagingClient lineClient,

@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAppOptions();
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddAiTools();
 builder.Services.AddWebhooks();
 
 builder.WebHost.ConfigureKestrel(o =>
