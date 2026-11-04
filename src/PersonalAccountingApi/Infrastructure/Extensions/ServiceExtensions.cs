@@ -68,8 +68,20 @@ public static class ServiceExtensions
       ?? throw new InvalidOperationException("DATABASE_URL is not set.");
     var connectionString = ToNpgsqlConnectionString(url);
 
+    var jsonOptions = new JsonSerializerOptions
+    {
+      PropertyNameCaseInsensitive = true,
+      Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+    };
+    var dataSource = new NpgsqlDataSourceBuilder(connectionString)
+      .EnableDynamicJson()
+      .ConfigureJsonOptions(jsonOptions)
+      .Build();
+    
+    services.AddSingleton(dataSource);
+
     services.AddDbContext<AppDbContext>(o => o
-      .UseNpgsql(connectionString)
+      .UseNpgsql(dataSource)
       .UseSnakeCaseNamingConvention());
 
     return services;

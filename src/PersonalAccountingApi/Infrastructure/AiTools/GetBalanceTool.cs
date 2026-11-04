@@ -16,7 +16,15 @@ public sealed class GetBalanceTool(AppDbContext db) : IAiTool
   public AiToolDefinition Definition { get; } = new(
     Name: "get_balance",
     Description:
-      "Get the balance of an account or a group of accounts. Use when the balance is required for the response or other tool use. An account name must match the name in the accounts table or be the 5 general accounts (Assets, Liabilities, Equity, Revenue, Expenses).",
+      """
+      Get the current balance of one or more accounts. Use it when the answer needs how much is in an account right now
+      (e.g. "how much cash do I have?", "what do I owe on my credit card?"), or when you need a balance before proposing a transaction.
+      Each requested name returns its own row (account, type, balance); nothing is added up across names. Request each name once.
+      A name must be either an exact ledger account name (e.g. "Cash"), or one of the 5 fundamentals: Assets, Liabilities, Equity, Revenue, Expenses (a fundamental returns the combined balance of all accounts of that type).
+      Balances are positive in the account's normal direction: an asset balance of 1000 means you have 1000, a liability
+      balance of 300 means you owe 300.
+      This returns only the current balance. For past activity or period totals, use search_transactions or summarize.
+      """,
     ParametersSchema: JsonNode.Parse("""
       {
         "type": "object",
@@ -26,7 +34,8 @@ public sealed class GetBalanceTool(AppDbContext db) : IAiTool
             "items": {
               "type": "string"
             },
-            "description": "The account names. E.g. [\"Assets\", \"Credit Card Debt\", \"Loan Receivable\"]" }
+            "description": "Account names, each either an exact ledger account name or one of Assets, Liabilities, Equity, Revenue, Expenses. E.g. [\"Cash\", \"Credit Card Debt\"] or [\"Assets\"]." 
+          }
         },
         "required": ["accountNames"]
       }
@@ -34,7 +43,7 @@ public sealed class GetBalanceTool(AppDbContext db) : IAiTool
 
   public async Task<AiToolResult> ExecuteAsync(AiToolCall call, ToolContext ctx, CancellationToken ct)
   {
-    // a failure goes back to the model
+    // get args, a failure goes back to the model
     GetBalanceArgs? args;
     try
     {
@@ -42,16 +51,16 @@ public sealed class GetBalanceTool(AppDbContext db) : IAiTool
     }
     catch (JsonException ex)
     {
-      return Error($"Invalid Arguments: {ex.Message}");
+      return AiToolHelper.Error($"Invalid Arguments: {ex.Message}");
     }
-    if (args?.AccountNames is not { Length: > 0 }) return Error("AccountNames must not be empty");
+    if (args?.AccountNames is not { Length: > 0 }) return AiToolHelper.Error("AccountNames must not be empty");
 
     // query
     var types = new List<AccountType>(); // assets, liabilities, etc
     var names = new List<string>(); // cash, loan receivable, etc
     foreach (var raw in args.AccountNames.Select(n => n?.Trim() ?? "").Where(n => n.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase))
     {
-      if (AccountTypes.Parse(raw) is { } type) { if (!types.Contains(type)) types.Add(type); }
+      if (AiToolHelper.ParseAccountType(raw) is { } type) { if (!types.Contains(type)) types.Add(type); }
       else names.Add(raw);
     }
 
@@ -61,7 +70,7 @@ public sealed class GetBalanceTool(AppDbContext db) : IAiTool
       .Select(a => a.Name)
       .ToListAsync(ct);
     var unknown = names.Except(existing).ToList();
-    if (unknown.Count > 0) return Error($"Account not found: {string.Join(", ", unknown)}. Use search_accounts to find the exact name");
+    if (unknown.Count > 0) return AiToolHelper.Error($"Account not found: {string.Join(", ", unknown)}.");
 
     // get user's all journal entries
     var userEntries =
@@ -101,6 +110,4 @@ public sealed class GetBalanceTool(AppDbContext db) : IAiTool
 
     return new ToolOutput(JsonSerializer.Serialize(results, AiJson.Options));
   }
-
-  private static ToolOutput Error(string message) => new(message, IsError: true);
 }

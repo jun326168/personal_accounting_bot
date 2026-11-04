@@ -2,6 +2,7 @@ namespace PersonalAccountingApi.Domain.Entities;
 
 public enum AccountType { Asset, Liability, Equity, Revenue, Expense }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum NormalBalance { Debit, Credit }
 
 public sealed class Account
