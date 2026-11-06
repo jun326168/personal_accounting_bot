@@ -57,6 +57,9 @@ public static class ServiceExtensions
     services.AddScoped<IWebhookHandler, MessageHandler>();
     services.AddScoped<IWebhookHandler, PostbackHandler>();
     services.AddScoped<IWebhookDispatcher, WebhookDispatcher>();
+    
+    services.AddSingleton<IWebhookQueue, WebhookQueue>();
+    services.AddHostedService<WebhookWorker>();
 
     return services;
   }
@@ -77,7 +80,7 @@ public static class ServiceExtensions
       .EnableDynamicJson()
       .ConfigureJsonOptions(jsonOptions)
       .Build();
-    
+
     services.AddSingleton(dataSource);
 
     services.AddDbContext<AppDbContext>(o => o
@@ -93,7 +96,7 @@ public static class ServiceExtensions
     services.AddScoped<IAiTool, GetBalanceTool>();
     services.AddScoped<IAiTool, SearchTransactionsTool>();
     services.AddScoped<IAiTool, SummarizeTool>();
-    services.AddScoped<IAiTool, ProposeTransactionTool>();
+    services.AddScoped<IAiTool, ProposeTransactionsTool>();
     services.AddScoped<IAiTool, ProposeReversalTool>();
 
     return services;

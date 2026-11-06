@@ -113,7 +113,7 @@ public sealed class SearchTransactionsTool(AppDbContext db) : IAiTool
 
       var existing = await db.Accounts.Where(a => names.Contains(a.Name)).Select(a => a.Name).ToListAsync(ct);
       var unknown = names.Except(existing).ToList();
-      if (unknown.Count > 0) return AiToolHelper.Error($"Account not found: {string.Join(", ", unknown)}. Use search_accounts to find the exact name");
+      if (unknown.Count > 0) return AiToolHelper.Error($"Account not found: {string.Join(", ", unknown)}. Use the exact name from the accounts list");
 
       var accountIds = await db.Accounts.Where(a => names.Contains(a.Name) || types.Contains(a.Type)).Select(a => a.Id).ToListAsync(ct);
       q = q.Where(t => db.JournalEntries.Any(j => j.TransactionId == t.Id && accountIds.Contains(j.AccountId)));

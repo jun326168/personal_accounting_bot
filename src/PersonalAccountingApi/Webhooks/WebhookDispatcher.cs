@@ -22,10 +22,18 @@ public sealed class WebhookDispatcher(
       if (!_byType.TryGetValue(eventDto.Type, out var handler))
       {
         logger.LogWarning("No handler for {EventType}; ignoring", eventDto.Type);
-        return;
+        continue;
       }
 
-      await handler.HandleAsync(eventDto, ct);
+      try
+      {
+        await handler.HandleAsync(eventDto, ct);
+      }
+      catch (Exception ex)
+      {
+        logger.LogError(ex, "Failed to handle event {EventType}", eventDto.Type);
+        // catch so one failure doesn't stop the others
+      }
     }
   }
 }

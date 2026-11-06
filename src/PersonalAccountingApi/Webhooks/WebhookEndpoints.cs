@@ -14,12 +14,9 @@ public static class WebhookEndpoints
   }
 
   // dispatch to different handlers
-  public static async Task<IResult> ReceiveWebhook(
-    WebhookDto dto,
-    IWebhookDispatcher dispatcher,
-    CancellationToken ct)
-  {
-    await dispatcher.DispatchAsync(dto, ct);
-    return Results.Accepted();
-  }
+  public static IResult ReceiveWebhook(WebhookDto dto, IWebhookQueue queue)
+  => queue.TryEnqueue(dto)
+    ? Results.Accepted()
+    : Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+
 }

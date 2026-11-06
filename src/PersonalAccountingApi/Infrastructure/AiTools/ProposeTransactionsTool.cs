@@ -118,8 +118,8 @@ public sealed class ProposeTransactionsTool(AppDbContext db) : IAiTool
         entries.Add(e with { AccountName = canonical });
       }
       // check if total debits = total credits
-      var debits = transaction.Entries.Where(e => e.Side == NormalBalance.Debit).Sum(e => e.Amount);
-      var credits = transaction.Entries.Where(e => e.Side == NormalBalance.Credit).Sum(e => e.Amount);
+      var debits = entries.Where(e => e.Side == NormalBalance.Debit).Sum(e => e.Amount);
+      var credits = entries.Where(e => e.Side == NormalBalance.Credit).Sum(e => e.Amount);
       if (debits != credits) return AiToolHelper.Error($"{label}: unbalanced. Total debits ({debits}) do not equal total credits ({credits}).");
 
       normalised.Add(t with

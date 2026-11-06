@@ -35,7 +35,7 @@ CREATE UNIQUE INDEX uq_one_opening ON transactions ((true)) WHERE kind = 'openin
 
 CREATE TABLE accounts (
   id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name            varchar(50) NOT NULL UNIQUE, -- 現金 (Cash), 應收帳款 (Accounts Receivable), etc
+  name            varchar(50) NOT NULL UNIQUE, -- Cash, Loan Receivable, etc
   type            varchar(9)  NOT NULL CHECK (type IN ('asset','liability','equity','revenue','expense')),
   normal_balance  varchar(6) GENERATED ALWAYS AS (
     CASE WHEN type IN ('asset','expense') THEN 'debit' ELSE 'credit' END

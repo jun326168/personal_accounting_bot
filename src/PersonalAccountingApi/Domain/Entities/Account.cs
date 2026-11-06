@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace PersonalAccountingApi.Domain.Entities;
 
 public enum AccountType { Asset, Liability, Equity, Revenue, Expense }
@@ -9,6 +11,7 @@ public sealed class Account
 {
   public long Id { get; init; }
   public required string Name { get; set; }
+  public string? NameZh { get; set; }
   public AccountType Type { get; init; }
 
   // generated column in the db, read-only here

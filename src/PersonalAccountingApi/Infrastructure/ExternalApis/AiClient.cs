@@ -20,7 +20,8 @@ public class AiClient(
       MaxTokens = options.Value.MaxTokens,
       System = systemPrompt,
       Messages = ToMessageParams(messages),
-      Tools = tools.Select(ToTool).ToList(),
+      Tools = tools.Select(t => (ToolUnion)ToTool(t)),
+      OutputConfig = new OutputConfig { Effort = Effort.Medium },
     }, ct);
 
     List<ContentBlockParam> echo = [];
