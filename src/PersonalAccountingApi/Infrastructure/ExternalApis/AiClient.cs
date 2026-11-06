@@ -20,7 +20,7 @@ public class AiClient(
       MaxTokens = options.Value.MaxTokens,
       System = systemPrompt,
       Messages = ToMessageParams(messages),
-      Tools = tools.Select(t => (ToolUnion)ToTool(t)),
+      Tools = tools.Select(t => (ToolUnion)ToTool(t)).ToList(),
       OutputConfig = new OutputConfig { Effort = Effort.Medium },
     }, ct);
 

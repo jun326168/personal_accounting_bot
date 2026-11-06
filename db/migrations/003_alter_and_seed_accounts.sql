@@ -16,7 +16,7 @@ INSERT INTO accounts (name, name_zh, type) VALUES
 ('Loan Payable (Personal)',    '應付私人借款',   'liability'),
 
 -- EQUITY 權益 (1)
-('Opening Balance Equity',     '期初餘額',       'equity'),
+('Balance Equity',     '餘額',       'equity'),
 
 -- REVENUE 收入 (5)
 ('Salary Income',              '薪資收入',       'revenue'),

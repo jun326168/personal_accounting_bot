@@ -91,7 +91,7 @@ public sealed class SummarizeTool(AppDbContext db) : IAiTool
           where t.Kind != TransactionKind.Opening && t.Date >= args.DateFrom && t.Date <= args.DateTo
           where a.Type == AccountType.Revenue || a.Type == AccountType.Expense
           group j by new { a.Name, a.Type } into g
-          select new { group = g.Key.Name, type = g.Key.Type, total = g.Sum(j => j.Amount) }
+          select new { @group = g.Key.Name, type = g.Key.Type, total = g.Sum(j => j.Amount) }
         ).ToListAsync(ct);
 
         var typeSummaries = await (
@@ -104,7 +104,7 @@ public sealed class SummarizeTool(AppDbContext db) : IAiTool
           where t.Kind != TransactionKind.Opening && t.Date >= args.DateFrom && t.Date <= args.DateTo
           where a.Type == AccountType.Revenue || a.Type == AccountType.Expense
           group j by a.Type into g
-          select new { group = g.Key.ToString(), type = g.Key, total = g.Sum(j => j.Amount) }
+          select new { @group = g.Key.ToString(), type = g.Key, total = g.Sum(j => j.Amount) }
         ).ToListAsync(ct);
 
         results = nameSummaries.Concat(typeSummaries).OrderBy(x => x.group, StringComparer.Ordinal).ThenBy(x => x.type).Cast<object>().ToList();
@@ -121,7 +121,7 @@ public sealed class SummarizeTool(AppDbContext db) : IAiTool
           where t.Kind != TransactionKind.Opening && t.Date >= args.DateFrom && t.Date <= args.DateTo
           where a.Type == AccountType.Revenue || a.Type == AccountType.Expense
           group j by a.Type into g
-          select new { group = g.Key.ToString(), type = g.Key, total = g.Sum(j => j.Amount) }
+          select new { @group = g.Key.ToString(), type = g.Key, total = g.Sum(j => j.Amount) }
         ).ToListAsync(ct);
 
         results = summaries.OrderBy(x => x.group, StringComparer.Ordinal).ThenBy(x => x.type).Cast<object>().ToList();

@@ -1,13 +1,17 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using Anthropic;
 using Microsoft.Extensions.DependencyInjection;
 using PersonalAccountingApi.Options;
 using PersonalAccountingApi.Webhooks;
 using PersonalAccountingApi.Webhooks.Handlers;
 using PersonalAccountingApi.Services.Messaging;
 using PersonalAccountingApi.Infrastructure.Data;
+using PersonalAccountingApi.Infrastructure.AiTools;
 using PersonalAccountingApi.Infrastructure.ExternalApis;
 
 namespace PersonalAccountingApi.Infrastructure.Extensions;
