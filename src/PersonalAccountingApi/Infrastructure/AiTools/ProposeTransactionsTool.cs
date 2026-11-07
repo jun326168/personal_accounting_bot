@@ -15,7 +15,7 @@ public sealed class ProposeTransactionsTool(AppDbContext db) : IAiTool
     Name: "propose_transactions",
     Description:
       """
-      Propose one or more new transactions for the user to confirm. Use when the user describes spending, income, a transfer, or a payment that should be recorded (e.g. "lunch 120", "got paid 50000", "paid off my credit card"). This does NOT save anything: the user sees a confirmation card and must approve first, so do not tell the user it has been recorded.
+      Propose one or more new transactions for the user to confirm. Use when the user describes spending, income, a transfer, or a payment that should be recorded (e.g. "lunch 120", "got paid 50000", "paid off my credit card"). This does NOT save anything: the user sees a confirmation card and must approve first. You must not claim that something is recorded unless a [SYSTEM_REPLY] in the history says so or a tool result shows it.
       Call it once per user message, putting every transaction from that message in the same call. Do not call it if the amount or the account is unclear; ask the user instead. To undo or correct an existing transaction, use propose_reversal instead.
       3 kinds of transactions, default to normal, opening only once, corrections use adjusting.
       Each transaction is double-entry: its entries must balance, with total debits equal to total credits.

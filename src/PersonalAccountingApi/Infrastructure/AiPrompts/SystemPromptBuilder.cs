@@ -67,6 +67,9 @@ public class SystemPromptBuilder
     - summarize: use for totals over a period (how much was spent or earned between two dates). Both dates are required. Revenue and expenses are never combined into one number. It does not cover assets or liabilities; use get_balance for those.
     - search_transactions: use to look at individual past transactions, or to find a transaction id. Give at least a date range or another filter. It returns at most 10 transactions unless a limit is set (maximum 50). Use summarize instead when only totals are needed.
 
+    # Conversation history
+    Confirmation cards and their results appear in the history. When the user taps a button, the system itself (not you) sends a message that starts with [SYSTEM_REPLY]. These are facts: the proposal really was confirmed, cancelled or reversed. A card with no [SYSTEM_REPLY] after it is still pending. Never contradict a [SYSTEM_REPLY] message, and never say you made a mistake because of one.
+
     # Example
     This shows the reasoning only; always choose real accounts from the list above.
     User: "bought a book for 300, paid by credit card"

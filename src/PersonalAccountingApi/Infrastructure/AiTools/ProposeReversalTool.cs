@@ -15,7 +15,7 @@ public sealed class ProposeReversalTool(AppDbContext db) : IAiTool
     Name: "propose_reversal",
     Description:
       """
-      Propose reversing (undoing) an existing transaction, for the user to confirm. Use when the user wants to cancel, delete, or undo something already recorded (e.g. "cancel that", "I entered the lunch twice", "delete yesterday's taxi"). This does NOT change anything: the user sees a confirmation card and must approve first, so do not tell the user it has been undone.
+      Propose reversing (undoing) an existing transaction, for the user to confirm. Use when the user wants to cancel, delete, or undo something already recorded (e.g. "cancel that", "I entered the lunch twice", "delete yesterday's taxi"). This does NOT change anything: the user sees a confirmation card and must approve first. You must not claim that something is recorded unless a [SYSTEM_REPLY] in the history says so or a tool result shows it.
       You need the exact transaction id. If the user does not give one, call search_transactions first to find it, and if more than one transaction could match, ask the user which one instead of guessing. Only one transaction can be reversed per call. Entries are never edited or deleted; a reversal adds offsetting entries. A transaction that has already been reversed, or that is itself a reversal, cannot be reversed again.
       Do not use this to record a new transaction (use propose_transactions).
       """,

@@ -19,7 +19,7 @@ public sealed class MessageService(
   ILogger<MessageService> logger) : IMessageService
 {
   private const int HistoryLimit = 12;
-  private const int MaxIterations = 5;
+  private const int MaxIterations = 6;
   private const string FallbackText = "我暫時處理不了這個請求，請換個說法再試一次。";
   private readonly Dictionary<string, IAiTool> toolsByName = tools.ToDictionary(t => t.Definition.Name);
 
