@@ -6,6 +6,12 @@ namespace PersonalAccountingApi.Templates.Messages;
 
 public static class ProposalMessage
 {
+  private const string Primary = "#3D4F63"; // dark gray-blue
+  private const string PrimaryText = "#FFFFFF";
+  private const string SecondaryBg = "#E8ECF0";
+  private const string SecondaryText = "#3D4F63";
+  private const string BodyText = "#2B3846";
+
   // confirm card as a flex bubble: summary text + confirm/cancel postback buttons
   public static FlexMessage Build(long proposalId, string summary)
   {
@@ -16,16 +22,28 @@ public static class ProposalMessage
       {
         ["type"] = "box",
         ["layout"] = "vertical",
-        ["contents"] = new JsonArray(new JsonObject { ["type"] = "text", ["text"] = summary, ["wrap"] = true }),
+        ["paddingAll"] = "16px",
+        ["contents"] = new JsonArray(new JsonObject
+        {
+          ["type"] = "text",
+          ["text"] = summary,
+          ["wrap"] = true,
+          ["size"] = "sm",
+          ["color"] = BodyText,
+        }),
       },
       ["footer"] = new JsonObject
       {
         ["type"] = "box",
         ["layout"] = "horizontal",
-        ["spacing"] = "md",
+        ["spacing"] = "sm",
+        ["paddingTop"] = "0px",
+        ["paddingBottom"] = "16px",
+        ["paddingStart"] = "16px",
+        ["paddingEnd"] = "16px",
         ["contents"] = new JsonArray(
-          Button("確認", $"action=confirm&proposalId={proposalId}", "primary"),
-          Button("取消", $"action=cancel&proposalId={proposalId}", "secondary")),
+          Button("確認", $"action=confirm&proposalId={proposalId}", Primary, PrimaryText),
+          Button("取消", $"action=cancel&proposalId={proposalId}", SecondaryBg, SecondaryText)),
       },
     };
 
@@ -34,11 +52,26 @@ public static class ProposalMessage
     return new FlexMessage(altText, bubble);
   }
 
-  private static JsonObject Button(string label, string data, string style) => new()
+  // compact pill button: a box with a postback action (a plain "button" can't be shrunk or fully rounded)
+  private static JsonObject Button(string label, string data, string background, string textColor) => new()
   {
-    ["type"] = "button",
-    ["style"] = style,
+    ["type"] = "box",
+    ["layout"] = "vertical",
+    ["flex"] = 1,
+    ["backgroundColor"] = background,
+    ["cornerRadius"] = "20px",
+    ["paddingTop"] = "8px",
+    ["paddingBottom"] = "8px",
     ["action"] = new JsonObject { ["type"] = "postback", ["label"] = label, ["data"] = data },
+    ["contents"] = new JsonArray(new JsonObject
+    {
+      ["type"] = "text",
+      ["text"] = label,
+      ["size"] = "sm",
+      ["weight"] = "bold",
+      ["align"] = "center",
+      ["color"] = textColor,
+    }),
   };
 
   // ---- summary text shown on the card (zh = english ledger name -> chinese name) ----
