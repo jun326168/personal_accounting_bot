@@ -17,6 +17,9 @@
 
 <!-- TODO: 放 1~2 張 LINE 對話截圖或一張 demo GIF，這是 README 最重要的部分 -->
 <!-- ![demo](docs/demo.gif) -->
+<img width="196" height="380" alt="screenshot-1" src="https://github.com/user-attachments/assets/1966abe7-72fc-492a-87c7-8228e84a53c7" />
+<img width="196" height="380" alt="screenshot-2" src="https://github.com/user-attachments/assets/1cf27bd9-1831-4363-82c7-c392f529f847" />
+
 
 ## 功能
 
