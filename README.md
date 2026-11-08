@@ -56,7 +56,7 @@ LINE ──POST /webhook──▶ LineSignatureFilter (驗證 HMAC-SHA256)
                   MessageService                            PostbackService
            (AI tool loop, 最多 6 輪)                    (確認 / 取消提案，寫入交易)
                          │
-        ┌────────────────┼──────────────────────────────┐
+        ┌────────────────┼───────────────────────────────────────────────┐
         ▼                ▼               ▼              ▼                ▼
    get_balance  search_transactions  summarize  propose_transactions  propose_reversal
 ```
@@ -98,7 +98,7 @@ db/                    SQL migrations 與初始化腳本
 - 每位使用者只能有一筆開帳交易（以 advisory lock 序列化並行寫入）
 
 **併發與冪等**
-- 確認卡片以條件式 `UPDATE ... WHERE status = 'pending'` 搶佔，並與寫入分錄放在同一個 transaction，避免重複點擊造成重複入帳；寫入失敗時一併回滾，卡片仍可再次確認
+- 確認卡片以條件式 `UPDATE ... WHERE status = 'pending'` 搶佔，並與寫入分錄放在同一個 transaction，避免重複點擊造成重複入帳；寫入失敗時一併回傳，卡片仍可再次確認
 
 **安全與部署**
 - 資料庫分兩種角色：管理者負責 migration，應用程式使用最小權限帳號（僅 `SELECT` / `INSERT` 與少數欄位的 `UPDATE`）
@@ -109,7 +109,7 @@ db/                    SQL migrations 與初始化腳本
 ## 設計決策
 
 **帳戶清單直接嵌入 System Prompt，不做 `search_account` 工具**
-帳戶是預先定義的固定清單（約 27 個），所以直接放進 prompt。這樣少一次 tool call 的往返，模型也只能從清單選擇，降低亂編帳戶名稱的機會；程式端仍會再驗證名稱是否存在。Prompt 中穩定內容（規則、帳戶）放前面，每次變動的日期放最後，讓前綴可被 prompt caching 重複利用。
+帳戶是預先定義的固定清單，所以直接放進 prompt。這樣少一次 tool call 的往返，模型也只能從清單選擇，降低亂編帳戶名稱的機會；程式端仍會再驗證名稱是否存在。Prompt 中穩定內容（規則、帳戶）放前面，每次變動的日期放最後，讓前綴可被 prompt caching 重複利用。
 <!-- TODO: 補上你當時考慮過的其他方案與取捨，例如帳戶數量變多時會怎麼改 -->
 
 **AI 只提案，不直接寫入**
@@ -192,7 +192,3 @@ Internet ──443──▶ Nginx（TLS 終止、HTTP 轉 HTTPS）──▶ api:
 - 僅支援單一幣別（新台幣）與純文字訊息
 - 帳戶為固定清單，不支援使用者自訂
 - CI/CD 目前只有建置與部署，尚未在部署前執行測試（待測試補上後加入）
-
-## 授權
-
-<!-- TODO: 選擇授權，例如 MIT -->
